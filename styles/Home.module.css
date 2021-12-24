@@ -44,6 +44,14 @@
   margin-right: 10px;
 }
 
+.disabled {
+  color: #d9d3d3;
+}
+
+.disabled label {
+  text-decoration: line-through;
+}
+
 @media (max-width: 600px) {
   
 }

@@ -6,28 +6,35 @@ import styles from '../styles/Home.module.css'
 const Home: NextPage = () => {
 
   const [todo, setTodo] = useState('')
+  const [updateTodo, setUpdateTodo] = useState(false);
+  const [list, setList] = useState([]);
 
-  const [list, setList] = useState([
-    { name: 'Surfar no Hawaii', id: 1 },
-    { name: 'Andar de skate no Brazil', id: 2 },
-    { name: 'Voar de balão', id: 3 },
-  ]);
-
-  const addTodo = (event: KeyboardEvent) => {
+  const addTodo = (event: any) => {
 
     if (event.key === 'Enter') {
       const time = new Date().getTime()
 
-      setList([...list, { name: todo, id: time }]);
+      setList([...list, { name: todo, id: time, done: false }]);
 
       setTodo('')
     }
-
   }
 
-  useEffect(() => {
-    console.log('list updated: ', list)
-  }, [list])
+  const toggleTodo = (element: any) => {
+    const id = parseInt(element.getAttribute('for').replace('item-', ''), 10)
+
+    const update = list.find((todo) => {
+      if (todo.id === id) {
+
+        !todo.done ? todo.done = true : todo.done = false;
+
+        return todo
+      }
+    })
+
+    setUpdateTodo(!updateTodo)
+    console.log(updateTodo)
+  }
 
 
   return (
@@ -50,10 +57,9 @@ const Home: NextPage = () => {
           <input type="text" value={todo} name="add" placeholder="Add a task to do" onKeyUp={addTodo} onChange={event => setTodo(event.target.value)} />
         </div>
 
-        {list.map(({ name, id }) => (
-          <div key={`item-${id}`}>
-            <label htmlFor={`item-${id}`} className={styles.item}>
-              <input type="checkbox" id={`item-${id}`} />
+        {list.map(({ name, id, done }) => (
+          <div key={`item-${id}`} className={done ? styles.disabled : ''}>
+            <label htmlFor={`item-${id}`} className={styles.item} onClick={event => toggleTodo(event.target)}>
               {name}
             </label>
           </div>
