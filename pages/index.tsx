@@ -33,7 +33,14 @@ const Home: NextPage = () => {
     })
 
     setUpdateTodo(!updateTodo)
-    console.log(updateTodo)
+  }
+
+  const deleteTodo = (id: number) => {
+    const filtered = list.filter((todo) => {
+      return todo.id !== id
+    })
+
+    setList(filtered)
   }
 
 
@@ -58,10 +65,11 @@ const Home: NextPage = () => {
         </div>
 
         {list.map(({ name, id, done }) => (
-          <div key={`item-${id}`} className={done ? styles.disabled : ''}>
+          <div key={`item-${id}`} className={done ? styles.disabled : styles.content}>
             <label htmlFor={`item-${id}`} className={styles.item} onClick={event => toggleTodo(event.target)}>
               {name}
             </label>
+            <span className={styles.delete} onClick={() => deleteTodo(id)}>delete</span>
           </div>
         ))}
 
