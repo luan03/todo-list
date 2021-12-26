@@ -8,13 +8,16 @@ const Home: NextPage = () => {
   const [todo, setTodo] = useState('')
   const [updateTodo, setUpdateTodo] = useState(false);
   const [list, setList] = useState([]);
+  const [edit, setEdit] = useState(false)
+  const [name, setName] = useState('')
+  const [done, setDone] = useState('')
 
   const addTodo = (event: any) => {
 
     if (event.key === 'Enter') {
       const time = new Date().getTime()
 
-      setList([...list, { name: todo, id: time, done: false }]);
+      setList([...list, { name: todo, id: time, done: false, show: false }]);
 
       setTodo('')
     }
@@ -23,10 +26,20 @@ const Home: NextPage = () => {
   const toggleTodo = (element: any) => {
     const id = parseInt(element.getAttribute('for').replace('item-', ''), 10)
 
-    const update = list.find((todo) => {
+    list.find((todo) => {
       if (todo.id === id) {
 
-        !todo.done ? todo.done = true : todo.done = false;
+        !todo.done ? setDone('not done') : setDone('done');
+
+        if (!todo.show) {
+          todo.show = true
+          setEdit(true)
+        } else {
+          todo.show = false;
+          setEdit(false)
+        }
+
+        setName(todo.name)
 
         return todo
       }
@@ -41,6 +54,39 @@ const Home: NextPage = () => {
     })
 
     setList(filtered)
+  }
+
+  const check = (element: any) => {
+    const id = parseInt(element.getAttribute('id').replace('item-', ''), 10)
+
+    list.find((todo) => {
+      if (todo.id === id) {
+
+        setUpdateTodo(!updateTodo)
+
+        if (!todo.done) {
+          todo.done = true
+        } else {
+          todo.done = false;
+        }
+
+        console.log(todo)
+
+        return todo
+      }
+    })
+  }
+
+  const backdrop = () => {
+    return (
+      <>
+        {edit && <aside className={styles.description}>
+          <div className={styles.label}><b>Description:</b> {name}</div>
+          <div className={styles.label}><b>Status:</b> {done}</div>
+          <input type="text" className={styles.update} placeholder="Edit your todo then press ENTER" />
+        </aside>}
+      </>
+    )
   }
 
 
@@ -64,14 +110,19 @@ const Home: NextPage = () => {
           <input type="text" value={todo} name="add" placeholder="Add a task to do" onKeyUp={addTodo} onChange={event => setTodo(event.target.value)} />
         </div>
 
-        {list.map(({ name, id, done }) => (
-          <div key={`item-${id}`} className={done ? styles.disabled : styles.content}>
+        {list.map(({ name, id, show, done }) => (
+          <div key={`item-${id}`} className={show ? styles.disabled : styles.content}>
+            <span id={`item-${id}`} className={done ? styles.marked : styles.check} onClick={event => check(event.target)}></span>
             <label htmlFor={`item-${id}`} className={styles.item} onClick={event => toggleTodo(event.target)}>
               {name}
             </label>
             <span className={styles.delete} onClick={() => deleteTodo(id)}>delete</span>
           </div>
         ))}
+
+
+        {backdrop()}
+
 
       </main>
     </div>
