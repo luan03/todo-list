@@ -1,93 +1,18 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import Add from '../components/Add'
+import Backdrop from '../components/Backdrop'
+import List from '../components/List'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
 
   const [todo, setTodo] = useState('')
-  const [updateTodo, setUpdateTodo] = useState(false);
   const [list, setList] = useState([]);
-  const [edit, setEdit] = useState(false)
   const [name, setName] = useState('')
+  const [edit, setEdit] = useState(false)
   const [done, setDone] = useState('')
-
-  const addTodo = (event: any) => {
-
-    if (event.key === 'Enter') {
-      const time = new Date().getTime()
-
-      setList([...list, { name: todo, id: time, done: false, show: false }]);
-
-      setTodo('')
-    }
-  }
-
-  const toggleTodo = (element: any) => {
-    const id = parseInt(element.getAttribute('for').replace('item-', ''), 10)
-
-    list.find((todo) => {
-      if (todo.id === id) {
-
-        !todo.done ? setDone('not done') : setDone('done');
-
-        if (!todo.show) {
-          todo.show = true
-          setEdit(true)
-        } else {
-          todo.show = false;
-          setEdit(false)
-        }
-
-        setName(todo.name)
-
-        return todo
-      }
-    })
-
-    setUpdateTodo(!updateTodo)
-  }
-
-  const deleteTodo = (id: number) => {
-    const filtered = list.filter((todo) => {
-      return todo.id !== id
-    })
-
-    setList(filtered)
-  }
-
-  const check = (element: any) => {
-    const id = parseInt(element.getAttribute('id').replace('item-', ''), 10)
-
-    list.find((todo) => {
-      if (todo.id === id) {
-
-        setUpdateTodo(!updateTodo)
-
-        if (!todo.done) {
-          todo.done = true
-        } else {
-          todo.done = false;
-        }
-
-        console.log(todo)
-
-        return todo
-      }
-    })
-  }
-
-  const backdrop = () => {
-    return (
-      <>
-        {edit && <aside className={styles.description}>
-          <div className={styles.label}><b>Description:</b> {name}</div>
-          <div className={styles.label}><b>Status:</b> {done}</div>
-          <input type="text" className={styles.update} placeholder="Edit your todo then press ENTER" />
-        </aside>}
-      </>
-    )
-  }
 
 
   return (
@@ -106,22 +31,11 @@ const Home: NextPage = () => {
           Today
         </h1>
 
-        <div className={styles.add}>
-          <input type="text" value={todo} name="add" placeholder="Add a task to do" onKeyUp={addTodo} onChange={event => setTodo(event.target.value)} />
-        </div>
+        <Add todo={todo} setList={setList} setTodo={setTodo} list={list} />
 
-        {list.map(({ name, id, show, done }) => (
-          <div key={`item-${id}`} className={show ? styles.disabled : styles.content}>
-            <span id={`item-${id}`} className={done ? styles.marked : styles.check} onClick={event => check(event.target)}></span>
-            <label htmlFor={`item-${id}`} className={styles.item} onClick={event => toggleTodo(event.target)}>
-              {name}
-            </label>
-            <span className={styles.delete} onClick={() => deleteTodo(id)}>delete</span>
-          </div>
-        ))}
+        <List list={list} setList={setList} setName={setName} setEdit={setEdit} setDone={setDone} />
 
-
-        {backdrop()}
+        <Backdrop name={name} done={done} edit={edit} />
 
 
       </main>
