@@ -14,7 +14,6 @@ const Home: NextPage = () => {
   const [edit, setEdit] = useState(false)
   const [done, setDone] = useState('')
 
-
   return (
     <div className={styles.container}>
       <Head>
